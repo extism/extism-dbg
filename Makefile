@@ -3,7 +3,7 @@ CFLAGS+= -I/usr/local/include
 PREFIX?=/usr/local
 
 bin:
-	$(CC) -o extism-dbg extism-dbg.c $(CFLAGS) $(LDFLAGS)
+	$(CC) -g -o extism-dbg extism-dbg.c $(CFLAGS) $(LDFLAGS)
 
 install:
 	install extism-dbg "$PREFIX"/bin/extism-dbg

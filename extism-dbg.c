@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
   ExtismContext *ctx = extism_context_new();
 
   setenv("EXTISM_DEBUG", "1", 0);
-  ExtismPlugin plugin = extism_plugin_new(ctx, wasm, wasmLength, NULL, 0, true);
+  ExtismPlugin plugin = extism_plugin_new(ctx, wasm, wasmLength, true);
   free(wasm);
   if (plugin < 0) {
     BAIL("%s", extism_error(ctx, plugin));
