@@ -25,5 +25,5 @@ Arguments:
 2. Function to call
 3. Input
  
-If the `input` argument starts with `@` then the input will be loaded from a file, otherwise it will be
-passed as-is. An `LLDB_FLAGS` environment variable can be used to pass additional flags to LLDB.
+If the `input` argument is `-` the input will be read from stdin, if it starts with `@` then the input will be loaded from a
+file otherwise it will be passed as-is. An `LLDB_FLAGS` environment variable can be used to pass additional flags to LLDB.

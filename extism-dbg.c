@@ -1,10 +1,33 @@
 #include <assert.h>
 #include <extism.h>
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+uint8_t *read_stdin(size_t *len) {
+  size_t size = 4096;
+  uint8_t *out = malloc(size);
+  if (out == NULL)
+    return NULL;
+
+  int ch;
+  size_t index = 0;
+
+  while ((ch = getchar()) != EOF) {
+    if (index >= size) {
+      size += 1024;
+      out = realloc(out, size);
+      assert(out != NULL);
+    }
+    out[index++] = ch;
+  }
+
+  *len = index;
+  return out;
+}
 
 uint8_t *read_file(const char *filename, size_t *len) {
   FILE *fp = fopen(filename, "rb");
@@ -35,15 +58,15 @@ uint8_t *read_file(const char *filename, size_t *len) {
 
 int main(int argc, char *argv[]) {
   if (argc < 3) {
-    fputs("usage: extism-dbg <Manifest or WebAssembly file> <function> [input "
-          "file]\n",
-          stderr);
+    fputs(
+        "usage: extism-dbg <Manifest or WebAssembly file> <function> [input]\n",
+        stderr);
     return 1;
   }
 
   int ret = 0;
   size_t wasmLength = 0;
-  uint8_t *wasm = read_file(argv[1], &wasmLength);
+  uint8_t *wasm = read_file(argv[1], &wasmLength); // Alloc wasm
   if (wasm == NULL) {
     fprintf(stderr, "Unable to read file: %s\n", argv[1]);
     return 1;
@@ -51,24 +74,27 @@ int main(int argc, char *argv[]) {
 
   uint8_t *data = NULL;
   size_t dataLength = 0;
-  ExtismContext *ctx = extism_context_new();
+  ExtismContext *ctx = extism_context_new(); // Alloc ctx
+  bool inputFromFile = false;
 
   setenv("EXTISM_DEBUG", "1", 0);
-  ExtismPlugin plugin = extism_plugin_new(ctx, wasm, wasmLength, true);
-  free(wasm);
+  ExtismPlugin plugin =
+      extism_plugin_new(ctx, wasm, wasmLength, true); // Alloc plugin
+  free(wasm);                                         // Free wasm
   if (plugin < 0) {
     BAIL("%s", extism_error(ctx, plugin));
   }
 
-  bool inputFromFile = false;
-
   if (argc > 3) {
     if (argv[3][0] == '@') {
       inputFromFile = true;
-      data = read_file(argv[3] + 1, &dataLength);
+      data = read_file(argv[3] + 1, &dataLength); // Alloc data
       if (data == NULL) {
         BAIL("Unable to read file: %s", argv[3]);
       }
+    } else if (strlen(argv[3]) == 1 && argv[3][0] == '-') {
+      inputFromFile = true;
+      data = read_stdin(&dataLength);
     } else {
       data = (uint8_t *)argv[3];
       dataLength = strlen(argv[3]);
@@ -86,10 +112,10 @@ int main(int argc, char *argv[]) {
 
 cleanup:
   if (data != NULL && inputFromFile) {
-    free(data);
+    free(data); // Free data
   }
 
-  extism_plugin_free(ctx, plugin);
-  extism_context_free(ctx);
+  extism_plugin_free(ctx, plugin); // Free plugin
+  extism_context_free(ctx);        // Free ctx
   return ret;
 }
