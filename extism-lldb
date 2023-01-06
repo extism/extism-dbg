@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 LLDB="${LLDB-lldb}"
-LLDB_FLAGS=""
+LLDB_FLAGS=${LLDB_FLAGS-}
 MANIFEST_OR_WASM="$1"
 FUNCTION_NAME="$2"
 INPUT_FILE="${3-}"

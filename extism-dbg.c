@@ -19,6 +19,8 @@ static uint8_t *read_file(const char *filename, size_t *len);
 int main(int argc, char *argv[]) {
   if (argc < 3) {
     fputs(
+        "extism-dbg is minimal Extism runtime used to wrap plugins for "
+        "debugging\n"
         "usage: extism-dbg <Manifest or WebAssembly file> <function> [input]\n",
         stderr);
     return 1;
@@ -44,8 +46,8 @@ int main(int argc, char *argv[]) {
   // Create plugin
   setenv("EXTISM_DEBUG", "1", 0);
   ExtismPlugin plugin =
-      extism_plugin_new(ctx, wasm, wasmLength, true); // Alloc plugin
-  free(wasm);                                         // Free wasm
+      extism_plugin_new(ctx, wasm, wasmLength, NULL, 0, true); // Alloc plugin
+  free(wasm);                                                  // Free wasm
   if (plugin < 0) {
     BAIL("%s", extism_error(ctx, plugin));
   }
