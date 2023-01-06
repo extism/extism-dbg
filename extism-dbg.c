@@ -1,11 +1,12 @@
 #include <assert.h>
-#include <extism.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <extism.h>
 
 static uint8_t *read_stdin(size_t *len);
 static uint8_t *read_file(const char *filename, size_t *len);
@@ -130,6 +131,7 @@ static uint8_t *read_file(const char *filename, size_t *len) {
 
   uint8_t *data = malloc(length);
   if (data == NULL) {
+    fclose(fp);
     return NULL;
   }
 
