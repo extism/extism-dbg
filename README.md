@@ -2,7 +2,7 @@
 
 A debugger for [Extism](https://github.com/extism/extism) plugins using LLDB
 
-## Installatino
+## Installation
 
 ```bash
 $ make build && sudo make install
