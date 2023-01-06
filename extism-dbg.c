@@ -52,7 +52,7 @@ uint8_t *read_file(const char *filename, size_t *len) {
 }
 
 #define BAIL(msg, ...)                                                         \
-  fprintf(stderr, msg "\n", __VA_ARGS__);                                      \
+  fprintf(stderr, "ERROR " msg "\n", __VA_ARGS__);                             \
   ret = 1;                                                                     \
   goto cleanup;
 
@@ -68,14 +68,15 @@ int main(int argc, char *argv[]) {
   size_t wasmLength = 0;
   uint8_t *wasm = read_file(argv[1], &wasmLength); // Alloc wasm
   if (wasm == NULL) {
-    fprintf(stderr, "Unable to read file: %s\n", argv[1]);
+    fprintf(stderr, "ERROR Unable to read WebAssembly file or Manifest: %s\n",
+            argv[1]);
     return 1;
   }
 
+  bool inputFromFile = false;
   uint8_t *data = NULL;
   size_t dataLength = 0;
   ExtismContext *ctx = extism_context_new(); // Alloc ctx
-  bool inputFromFile = false;
 
   setenv("EXTISM_DEBUG", "1", 0);
   ExtismPlugin plugin =
@@ -83,6 +84,10 @@ int main(int argc, char *argv[]) {
   free(wasm);                                         // Free wasm
   if (plugin < 0) {
     BAIL("%s", extism_error(ctx, plugin));
+  }
+
+  if (!extism_plugin_function_exists(ctx, plugin, argv[2])) {
+    BAIL("Function does not exist in plugin: %s", argv[2]);
   }
 
   if (argc > 3) {
