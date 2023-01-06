@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+LLDB="${LLDB-lldb}"
+MANIFEST_OR_WASM="$1"
+FUNCTION_NAME="$2"
+INPUT_FILE="${3-}"
+
+"$LLDB" --one-line "b $FUNCTION_NAME" -- ./extism-dbg "$MANIFEST_OR_WASM" "$FUNCTION_NAME" "$INPUT_FILE" 
