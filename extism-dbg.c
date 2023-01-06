@@ -2,6 +2,8 @@
 #include <extism.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 uint8_t *read_file(const char *filename, size_t *len) {
@@ -58,10 +60,18 @@ int main(int argc, char *argv[]) {
     BAIL("%s", extism_error(ctx, plugin));
   }
 
+  bool inputFromFile = false;
+
   if (argc > 3) {
-    data = read_file(argv[3], &dataLength);
-    if (data == NULL) {
-      BAIL("Unable to read file: %s", argv[3]);
+    if (argv[3][0] == '@') {
+      inputFromFile = true;
+      data = read_file(argv[3] + 1, &dataLength);
+      if (data == NULL) {
+        BAIL("Unable to read file: %s", argv[3]);
+      }
+    } else {
+      data = (uint8_t *)argv[3];
+      dataLength = strlen(argv[3]);
     }
   }
 
@@ -75,7 +85,7 @@ int main(int argc, char *argv[]) {
   }
 
 cleanup:
-  if (data != NULL) {
+  if (data != NULL && inputFromFile) {
     free(data);
   }
 
