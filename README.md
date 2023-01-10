@@ -2,6 +2,8 @@
 
 Debugging for [Extism](https://github.com/extism/extism) plugins
 
+![extism-dbg](extism-dbg.png)
+
 ## Installation
 
 ```bash
