@@ -7,7 +7,7 @@ Debugging for [Extism](https://github.com/extism/extism) plugins
 ## Installation
 
 ```bash
-$ make build && sudo make install
+$ make && sudo make install
 ```
 
 This will install `extism-dbg` and `extism-lldb`:
@@ -20,12 +20,16 @@ The following command will start LLDB with a breakpoint set on the specified plu
 just type `run` at the LLDB prompt to start executing the plugin:
 
 ```bash
-$ extism-lldb code.wasm count_vowels @input.txt
+$ extism-lldb code.wasm count_vowels --input @input.txt
 ```
+
 Arguments:
 1. WebAssembly module or Manifest file
 2. Function to call
-3. Input
+
+See the output of `extism-lldb --help` for a list of flags.
  
-If the `input` argument starts with `@` then the input will be loaded from a file otherwise it will 
-be passed as-is. An `LLDB_FLAGS` environment variable can be used to pass additional flags to LLDB.
+- If the `--input` parameter starts with `@` then the input will be loaded from a file otherwise it will 
+  be passed as-is. 
+- `--lldb` can be used to specify the LLDB executable
+- Any arguments after the function name will be passed to LLDB directly

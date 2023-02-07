@@ -1,10 +1,29 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
-LLDB="${LLDB-lldb}"
-LLDB_FLAGS=${LLDB_FLAGS-}
-MANIFEST_OR_WASM="$1"
-FUNCTION_NAME="$2"
-INPUT_FILE="${3-}"
+import argparse
+import subprocess
+import sys
 
-"$LLDB" $LLDB_FLAGS --one-line "b $FUNCTION_NAME" -- ./extism-dbg "$MANIFEST_OR_WASM" "$FUNCTION_NAME" "$INPUT_FILE"
+if __name__ == '__main__':
+    # Parse arguments
+    parser = argparse.ArgumentParser("extism-lldb", description="LLDB for extism modules")
+    parser.add_argument("plugin_file", help="Extism WASM or Manifest file")
+    parser.add_argument("function_name", help="Plugin function")
+    parser.add_argument("--input", "-i", help="Input data, an '@' prefix can be used to load input directly from a file", default="")
+    parser.add_argument("--lldb", metavar="EXECUTABLE", help="LLDB executable", default="lldb")
+    parser.add_argument("lldb_arguments", nargs='*', help="LLDB arguments")
+    args = parser.parse_args()
 
+    # Build argument list
+    proc_args = [args.lldb]
+    proc_args.extend(args.lldb_arguments)
+    proc_args.append("--one-line")
+    proc_args.append(f"b {args.function_name}")
+    proc_args.append("--")
+    proc_args.append("./extism-dbg")
+    proc_args.append(args.plugin_file)
+    proc_args.append(args.function_name)
+    proc_args.append(args.input)
+
+    # Run LLDD
+    sys.exit(subprocess.Popen(proc_args,).wait())
