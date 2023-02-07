@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import argparse
-import subprocess
 import sys
+import os
 
 if __name__ == '__main__':
     # Parse arguments
@@ -11,12 +11,13 @@ if __name__ == '__main__':
     parser.add_argument("function_name", help="Plugin function")
     parser.add_argument("--input", "-i", help="Input data. '@' prefix can be used to load input directly from a file", default="")
     parser.add_argument("--lldb", metavar="EXECUTABLE", help="LLDB executable", default="lldb")
-    parser.add_argument("lldb_arguments", nargs='*', help="LLDB arguments")
-    args = parser.parse_args()
+    (args, lldb_args) = parser.parse_known_args()
+
+    if len(lldb_args) > 0 and lldb_args[0] == '--':
+        lldb_args = lldb_args[1:]
 
     # Build argument list
-    proc_args = [args.lldb]
-    proc_args.extend(args.lldb_arguments)
+    proc_args = lldb_args
     proc_args.append("--one-line")
     proc_args.append(f"b {args.function_name}")
     proc_args.append("--")
@@ -25,5 +26,5 @@ if __name__ == '__main__':
     proc_args.append(args.function_name)
     proc_args.append(args.input)
 
-    # Run LLDD
-    sys.exit(subprocess.Popen(proc_args,).wait())
+    # Run LLDB
+    os.execlpe(args.lldb, args.lldb, *proc_args, dict(EXTISM_DEBUG=""))
