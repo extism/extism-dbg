@@ -11,3 +11,8 @@ install:
 
 uninstall:
 	rm -f $(PREFIX)/bin/extism-dbg $(PREFIX)/bin/extism-lldb 
+
+check:
+	@curl -O https://raw.githubusercontent.com/extism/extism/main/wasm/code.wasm --silent
+	./extism-dbg ./code.wasm count_vowels "this is a test" | grep 4
+
