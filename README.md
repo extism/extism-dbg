@@ -20,7 +20,7 @@ The following command will start LLDB with a breakpoint set on the specified plu
 just type `run` at the LLDB prompt to start executing the plugin:
 
 ```bash
-$ extism-lldb code.wasm count_vowels --input @input.txt
+$ extism-lldb count-vowels.wasm count_vowels --input @input.txt
 ```
 
 Arguments:
