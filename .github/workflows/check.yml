@@ -42,4 +42,4 @@ jobs:
       run: make
 
     - name: make check
-      run: make check
+      run: LD_LIBRARY_PATH=/usr/local/lib make check
