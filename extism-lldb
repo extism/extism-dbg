@@ -6,10 +6,10 @@ import sys
 
 if __name__ == '__main__':
     # Parse arguments
-    parser = argparse.ArgumentParser("extism-lldb", description="LLDB for extism modules")
-    parser.add_argument("plugin_file", help="Extism WASM or Manifest file")
+    parser = argparse.ArgumentParser("extism-lldb", description="LLDB for Extism plugins")
+    parser.add_argument("plugin_file", help="WASM or Manifest file")
     parser.add_argument("function_name", help="Plugin function")
-    parser.add_argument("--input", "-i", help="Input data, an '@' prefix can be used to load input directly from a file", default="")
+    parser.add_argument("--input", "-i", help="Input data. '@' prefix can be used to load input directly from a file", default="")
     parser.add_argument("--lldb", metavar="EXECUTABLE", help="LLDB executable", default="lldb")
     parser.add_argument("lldb_arguments", nargs='*', help="LLDB arguments")
     args = parser.parse_args()
