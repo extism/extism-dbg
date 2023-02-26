@@ -25,6 +25,6 @@ if __name__ == '__main__':
     proc_args.append(args.plugin_file)
     proc_args.append(args.function_name)
     proc_args.append(args.input)
-
+    os.environ["EXTISM_DEBUG"] = ""
     # Run LLDB
-    os.execlpe(args.lldb, args.lldb, *proc_args, dict(EXTISM_DEBUG=""))
+    os.execlpe(args.lldb, args.lldb, *proc_args, os.environ)
