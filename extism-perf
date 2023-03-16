@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+import argparse
+import subprocess
+import sys
+
+if __name__ == '__main__':
+    # Parse arguments
+    parser = argparse.ArgumentParser("extism-perf", description="run perf on extism modules")
+    parser.add_argument("plugin_file", help="Extism WASM or Manifest file")
+    parser.add_argument("function_name", help="Plugin function")
+    parser.add_argument("--input", "-i", help="Input data, an '@' prefix can be used to load input directly from a file", default="")
+    (args, perf_args) = parser.parse_known_args()
+
+    if len(perf_args) > 0 and perf_args[0] == '--':
+        perf_args = perf_args[1:]
+
+    # Build argument list
+    proc_args = ["perf", "record", "-k", "1"]
+    proc_args.extend(perf_args)
+    proc_args.append("--")
+    proc_args.append("./extism-dbg")
+    proc_args.append(args.plugin_file)
+    proc_args.append(args.function_name)
+    proc_args.append(args.input)
+
+    # Run perf
+    sys.exit(subprocess.Popen(proc_args,).wait())

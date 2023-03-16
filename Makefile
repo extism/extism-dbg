@@ -8,9 +8,10 @@ bin:
 install:
 	install extism-dbg $(PREFIX)/bin/extism-dbg
 	install extism-lldb $(PREFIX)/bin/extism-lldb
+	install extism-perf $(PREFIX)/bin/extism-perf
 
 uninstall:
-	rm -f $(PREFIX)/bin/extism-dbg $(PREFIX)/bin/extism-lldb 
+	rm -f $(PREFIX)/bin/extism-dbg $(PREFIX)/bin/extism-lldb $(PREFIX)/bin/extism-perf
 
 check:
 	./extism-dbg ./count-vowels.wasm count_vowels "this is a test" | grep 4
