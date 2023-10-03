@@ -26,6 +26,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  char *errmsg = NULL;                             // Plugin error message
   int ret = 0;                                     // Return value
   size_t wasmLength = 0;                           // Length of WASM data
   uint8_t *wasm = read_file(argv[1], &wasmLength); // Alloc wasm
@@ -40,20 +41,20 @@ int main(int argc, char *argv[]) {
   uint8_t *data = NULL;  // Input data
   size_t dataLength = 0; // Input data length
 
-  // Create context
-  ExtismContext *ctx = extism_context_new(); // Alloc ctx
-
   // Create plugin
   setenv("EXTISM_DEBUG", "1", 0);
-  ExtismPlugin plugin =
-      extism_plugin_new(ctx, wasm, wasmLength, NULL, 0, true); // Alloc plugin
-  free(wasm);                                                  // Free wasm
-  if (plugin < 0) {
-    BAIL("%s", extism_error(ctx, plugin));
+  ExtismPlugin *plugin = extism_plugin_new(wasm, wasmLength, NULL, 0, true,
+                                           &errmsg); // Alloc plugin
+  free(wasm);                                        // Free wasm
+  if (errmsg != NULL) {
+    BAIL("%s", errmsg);
+  }
+  if (plugin == NULL) {
+    BAIL("%s", "unable to create plugin");
   }
 
   // Make sure that the specified function exists before reading input
-  if (!extism_plugin_function_exists(ctx, plugin, argv[2])) {
+  if (!extism_plugin_function_exists(plugin, argv[2])) {
     BAIL("Function does not exist in plugin: %s", argv[2]);
   }
 
@@ -78,13 +79,13 @@ int main(int argc, char *argv[]) {
   }
 
   // Call the function
-  uint32_t rc = extism_plugin_call(ctx, plugin, argv[2], data, dataLength);
+  uint32_t rc = extism_plugin_call(plugin, argv[2], data, dataLength);
   if (rc != 0) {
-    BAIL("%s", extism_error(ctx, plugin));
+    BAIL("%s", extism_error(plugin));
   } else {
     // Handle error
-    const uint8_t *output = extism_plugin_output_data(ctx, plugin);
-    size_t outputLength = extism_plugin_output_length(ctx, plugin);
+    const uint8_t *output = extism_plugin_output_data(plugin);
+    size_t outputLength = extism_plugin_output_length(plugin);
     write(STDOUT_FILENO, output, outputLength);
   }
 
@@ -94,8 +95,11 @@ cleanup:
     free(data); // Free data
   }
 
-  extism_plugin_free(ctx, plugin); // Free plugin
-  extism_context_free(ctx);        // Free ctx
+  if (errmsg != NULL) {
+    extism_plugin_new_error_free(errmsg);
+  }
+
+  extism_plugin_free(plugin); // Free plugin
   return ret;
 }
 
