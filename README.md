@@ -28,7 +28,8 @@ Arguments:
 2. Function to call
 
 See the output of `extism-lldb --help` for a list of options.
- 
+
+- The `--source` parameter can be used to specify the search path(s) for the original source files 
 - If the `--input` parameter starts with `@` then the input will be loaded from a file otherwise it will 
   be passed as-is. 
 - `--lldb` can be used to specify the LLDB executable
